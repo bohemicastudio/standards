@@ -1,0 +1,10 @@
+{
+  "name": "bohemica-standards",
+  "version": "0.1.0",
+  "description": "Audit a delivered web project against Bohemica delivery standards (security, deploy & headers, web standards) and write AUDIT.md.",
+  "author": {
+    "name": "Bohemica Studio"
+  },
+  "license": "MIT",
+  "keywords": ["audit", "nuxt", "security", "seo", "delivery", "handover"]
+}

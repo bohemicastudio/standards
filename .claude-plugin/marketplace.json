@@ -1,0 +1,19 @@
+{
+  "name": "bohemica",
+  "owner": {
+    "name": "Bohemica Studio"
+  },
+  "metadata": {
+    "description": "Bohemica Studio internal Claude Code plugins"
+  },
+  "plugins": [
+    {
+      "name": "bohemica-standards",
+      "source": "./plugins/bohemica-standards",
+      "description": "Audit a delivered web project against Bohemica delivery standards (security, deploy & headers, web standards) and write AUDIT.md.",
+      "version": "0.1.0",
+      "category": "quality",
+      "keywords": ["audit", "nuxt", "security", "seo", "delivery"]
+    }
+  ]
+}
