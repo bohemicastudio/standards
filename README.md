@@ -15,6 +15,22 @@ Inside Claude Code:
 
 Source: https://github.com/bohemicastudio/standards. For a private repo, Claude Code uses your existing git credentials.
 
+## Usage
+
+```
+/bohemica-standards:delivery-audit
+/bohemica-standards:delivery-audit ./apps/web --public --url https://www.example.cz
+/bohemica-standards:delivery-audit --internal --quick
+```
+
+- No arguments at all: the skill opens a short interactive dialog (target, exposure, live URL, full or quick) and then runs.
+- `path` — project folder (default: current directory; in a monorepo point at the app).
+- `--public` / `--internal` / `--api` — who will see it. If omitted and not obvious, the skill asks one question.
+- `--url` — live site; enables header, robots, sitemap, 404 and AI-crawler checks with `curl`, plus a Lighthouse run (needs Chrome; the CLI is downloaded via `npx` if not installed).
+- `--quick` — blockers and script-decided items only, no file reading, no Lighthouse. A couple of minutes instead of ten.
+
+Output: `AUDIT.md` in the audited project with a summary table, findings grouped by severity (each with location, evidence, fix), passed IDs, n/a, not-verified items with their reason, and skipped items in quick mode.
+
 ## Local development
 
 Run Claude Code with the plugin loaded straight from this checkout (the path points at the plugin folder, not the repo root):
@@ -42,22 +58,6 @@ bash plugins/bohemica-standards/skills/delivery-audit/scripts/collect-evidence.s
 `--only` runs selected check groups by their filename prefix (see `scripts/checks/`), useful when tuning one group.
 
 Requirements: bash, grep, find, perl (Git Bash on Windows has all of them), `git`, `node` and `curl`. Lighthouse needs Chrome or Edge installed; the CLI itself is downloaded through `npx` on first use if not installed.
-
-## Usage
-
-```
-/bohemica-standards:delivery-audit
-/bohemica-standards:delivery-audit ./apps/web --public --url https://www.example.cz
-/bohemica-standards:delivery-audit --internal --quick
-```
-
-- No arguments at all: the skill opens a short interactive dialog (target, exposure, live URL, full or quick) and then runs.
-- `path` — project folder (default: current directory; in a monorepo point at the app).
-- `--public` / `--internal` / `--api` — who will see it. If omitted and not obvious, the skill asks one question.
-- `--url` — live site; enables header, robots, sitemap, 404 and AI-crawler checks with `curl`, plus a Lighthouse run (needs Chrome; the CLI is downloaded via `npx` if not installed).
-- `--quick` — blockers and script-decided items only, no file reading, no Lighthouse. A couple of minutes instead of ten.
-
-Output: `AUDIT.md` in the audited project with a summary table, findings grouped by severity (each with location, evidence, fix), passed IDs, n/a, not-verified items with their reason, and skipped items in quick mode.
 
 ## How it works
 
