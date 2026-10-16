@@ -36,7 +36,7 @@ Severity means: **blocker** must be fixed before handover; **warning** should be
 ## Adding an item, step by step
 
 1. Add the item at the end of the right checklist in `plugins/bohemica-standards/skills/delivery-audit/checklists/`. Next free number.
-2. Add a `block <ID>` with the same ID to the matching file in `scripts/checks/` (`10-security.sh`, `20-deploy.sh`, `30-web.sh`, `40-web-geo.sh`, `50-lighthouse.sh`). Use the helpers from `scripts/lib/common.sh` (`g`, `gl`, `show`, `lsx`, `html_text`, `curl_head`, `curl_status`). Cap output; never print secret values.
+2. Add a `block <ID>` with the same ID to the matching file in `scripts/checks/` (`10-security.sh`, `20-deploy.sh`, `30-web.sh`, `40-web-geo.sh`, `45-html-validate.sh`, `50-lighthouse.sh`). Use the helpers from `scripts/lib/common.sh` (`g`, `gl`, `show`, `lsx`, `html_text`, `curl_head`, `curl_status`). Cap output; never print secret values.
 3. If the block needs the live site, guard it with `[ -n "$URL" ]`; if it is slow, also `[ "$QUICK" = 0 ]`.
 4. Run the self-check below and paste the relevant block output into the PR.
 5. Update the ID range in `README.md` if you extended it.

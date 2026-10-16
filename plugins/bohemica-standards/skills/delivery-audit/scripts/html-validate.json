@@ -1,0 +1,9 @@
+{
+  "root": true,
+  "extends": ["html-validate:standard", "html-validate:a11y"],
+  "rules": {
+    "aria-label-misuse": "warn",
+    "prefer-native-element": "warn",
+    "unique-landmark": "warn"
+  }
+}

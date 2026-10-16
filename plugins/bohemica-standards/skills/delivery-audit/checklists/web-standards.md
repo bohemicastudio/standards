@@ -1,8 +1,8 @@
 # Web standards checklist (WEB)
 
-Applies to public websites on any framework: crawlability, SEO metadata, sharing, i18n, legal basics, accessibility basics, a performance sanity check and AI/GEO readiness (WEB-17 to WEB-22) and Lighthouse scores (WEB-23). Not a full SEO or accessibility audit. Framework-specific locations are in `../frameworks/<framework>.md`; evidence is in the `collect-evidence.sh` block of the same ID.
+Applies to public websites on any framework: crawlability, SEO metadata, sharing, i18n, legal basics, accessibility basics, a performance sanity check and AI/GEO readiness (WEB-17 to WEB-22), Lighthouse scores (WEB-23) and HTML validity (WEB-24). Not a full SEO or accessibility audit. Framework-specific locations are in `../frameworks/<framework>.md`; evidence is in the `collect-evidence.sh` block of the same ID.
 
-For `internal` exposure only WEB-04, WEB-07, WEB-08, WEB-15 and WEB-23 apply. Items needing the live site say so; without `--url` judge the config and mark live behaviour `not-verified (no --url)`.
+For `internal` exposure only WEB-04, WEB-07, WEB-08, WEB-15, WEB-23 and WEB-24 apply. Items needing the live site say so; without `--url` judge the config and mark live behaviour `not-verified (no --url)`.
 
 Tags as in `security.md`; plus `i18n` (`STACK.has.i18n`), `migration` (the project replaces an existing site; if unknown, state the assumption).
 
@@ -32,7 +32,7 @@ Tags as in `security.md`; plus `i18n` (`STACK.has.i18n`), `migration` (the proje
 ### WEB-04 `<html lang>` set correctly
 - **Applies to:** public, internal
 - **Check:** The root `lang` attribute is the site language and changes per locale when i18n is used.
-- **How:** Block `WEB-04`.
+- **How:** The rendered value is the `lang=` field of the per-page line in block `WEB-24` (live pages or build output); compare it with the site language. Block `WEB-04` lists where `lang` is set in the source, which is where the fix goes. Without rendered HTML, judge from block `WEB-04` alone.
 - **Severity:** warning
 - **Fix:** `app.head.htmlAttrs.lang` (Nuxt), `<html lang>` in `index.html` / layout, `useLocaleHead` for i18n.
 
@@ -177,4 +177,15 @@ Generative engines (ChatGPT, Perplexity, Claude, Gemini, Google AI Overviews) fe
 - **Check:** Lighthouse (mobile, default throttling) on the home page: performance ≥ 80, accessibility ≥ 90, best practices ≥ 90, SEO ≥ 90. Lab metrics: LCP ≤ 2.5 s, CLS ≤ 0.1, TBT ≤ 300 ms. Scores are a summary signal; the failing audits underneath are what gets fixed.
 - **How:** Block `WEB-23` (live only, skipped in `--quick`): category scores, lab metrics, top performance opportunities, failing accessibility/best-practices/SEO audits. The full JSON report path is printed; open it only if a failing audit needs detail. Without `--url` or without Chrome: `not-verified` with the reason from the block. One run on one page has noise of a few points; treat a score within 5 points of a threshold as borderline, not as a finding.
 - **Severity:** blocker for performance below 50 on a public content site; warning for performance below 80, accessibility below 90 or SEO below 90, or LCP/CLS/TBT over the limits; info for best practices below 90
-- **Fix:** Follow the listed opportunities: image sizing/format (WEB-09), font loading (WEB-10), render-blocking third-party scripts (SEC-15, WEB-13), unused JS (WEB-16), missing alt/labels/contrast (WEB-15), missing meta (WEB-05).
+- **Fix:** Follow the listed opportunities: image sizing/format (WEB-09), font loading (WEB-10), render-blocking third-party scripts (SEC-15, WEB-13), unused JS (WEB-16), missing alt/labels/contrast (WEB-15), missing meta (WEB-05), invalid markup (WEB-24).
+
+---
+
+## HTML validity
+
+### WEB-24 Rendered HTML is valid
+- **Applies to:** public, internal
+- **Check:** Every page starts with `<!DOCTYPE html>` and has `<html lang>` matching the site language, `<meta charset="utf-8">`, a viewport meta tag and a `<title>`. The markup has no errors from html-validate's `standard` and `a11y` presets: no duplicate `id`s, no elements where the content model forbids them (`<div>` inside `<button>` or `<p>`), no stray or misnested end tags, no missing required attributes (`alt`, `lang`), buttons with a `type` and accessible text. The validated HTML is the delivered output (live pages, or build output), not the templates.
+- **How:** Block `WEB-24` (runs in `--quick` too): the source line (`live`, `build` or `static`), one line per page with doctype/lang/charset/viewport/title and error counts, then the rules by count with up to two `page:line:column` examples each. Report one finding per rule, not per occurrence: the same error on every page comes from a shared layout or component, so say so and give the count. Rules marked `[warn]` are advisory and go into the finding only as a note. If the source is `build` and the build date is older than the last commit, mention that the output may be stale. Source `static` covers only the HTML shell (a Vite SPA's `index.html`). `(nothing to validate …)` or `(html-validate unavailable …)`: `not-verified` with that reason.
+- **Severity:** warning when any page is missing doctype, `lang`, charset or viewport, or when html-validate reports errors (not `[warn]`); info when only `[warn]` rules fire
+- **Fix:** Follow the rule documentation at `https://html-validate.org/rules/<rule>.html`. Typical fixes: unique `id`s (generate them with `useId()` in Vue 3.5+, or derive them from a slug plus a suffix), `<span>` instead of `<div>` inside buttons and inline elements, `type="button"` on non-submit buttons, `alt` on every `<img>` (empty for decorative ones), `lang`/charset/viewport in the app head config (WEB-04).

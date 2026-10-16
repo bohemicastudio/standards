@@ -2,7 +2,7 @@
 
 Claude Code plugin marketplace for Bohemica Studio. Contains the `bohemica-standards` plugin, which audits a delivered web project against our delivery standards and writes an `AUDIT.md` into the project.
 
-Current scope (v0.1): security, deploy & HTTP headers, web standards including AI/GEO readiness and Lighthouse scores. Checklists are framework-neutral; framework locators exist for Nuxt, Vue/Vite SPA, Astro, Laravel and Strapi. Nuxt SSR is the most exercised path.
+Current scope (v0.2): security, deploy & HTTP headers, web standards including AI/GEO readiness, HTML validity (html-validate) and Lighthouse scores. Checklists are framework-neutral; framework locators exist for Nuxt, Vue/Vite SPA, Astro, Laravel and Strapi. Nuxt SSR is the most exercised path.
 
 ## Install
 
@@ -26,8 +26,8 @@ Source: https://github.com/bohemicastudio/standards. For a private repo, Claude 
 - No arguments at all: the skill opens a short interactive dialog (target, exposure, live URL, full or quick) and then runs.
 - `path` — project folder (default: current directory; in a monorepo point at the app).
 - `--public` / `--internal` / `--api` — who will see it. If omitted and not obvious, the skill asks one question.
-- `--url` — live site; enables header, robots, sitemap, 404 and AI-crawler checks with `curl`, plus a Lighthouse run (needs Chrome; the CLI is downloaded via `npx` if not installed).
-- `--quick` — blockers and script-decided items only, no file reading, no Lighthouse. A couple of minutes instead of ten.
+- `--url` — live site; enables header, robots, sitemap, 404 and AI-crawler checks with `curl`, plus a Lighthouse run (needs Chrome; the CLI is downloaded via `npx` if not installed). HTML validation (WEB-24) then runs on the live home page and up to four sitemap URLs; without a URL it validates the build output (`.output/public`, `dist`, `build`) or static HTML in the repo.
+- `--quick` — blockers and script-decided items only, no file reading, no Lighthouse (html-validate still runs). A couple of minutes instead of ten.
 
 Output: `AUDIT.md` in the audited project with a summary table, findings grouped by severity (each with location, evidence, fix), passed IDs, n/a, not-verified items with their reason, and skipped items in quick mode.
 
@@ -57,7 +57,7 @@ bash plugins/bohemica-standards/skills/delivery-audit/scripts/collect-evidence.s
 
 `--only` runs selected check groups by their filename prefix (see `scripts/checks/`), useful when tuning one group.
 
-Requirements: bash, grep, find, perl (Git Bash on Windows has all of them), `git`, `node` and `curl`. Lighthouse needs Chrome or Edge installed; the CLI itself is downloaded through `npx` on first use if not installed.
+Requirements: bash, grep, find, perl (Git Bash on Windows has all of them), `git`, `node` and `curl`. Lighthouse needs Chrome or Edge installed; the Lighthouse and html-validate CLIs are downloaded through `npx` on first use if not installed (html-validate 10 needs Node 20+, older Node falls back to 9).
 
 ## How it works
 
@@ -70,15 +70,16 @@ plugins/bohemica-standards/
     ├── checklists/               # by concern, framework-neutral
     │   ├── security.md           # SEC-01 … SEC-18
     │   ├── deploy-and-headers.md # DEP-01 … DEP-16
-    │   └── web-standards.md      # WEB-01 … WEB-23
+    │   └── web-standards.md      # WEB-01 … WEB-24
     ├── frameworks/               # where each concept lives per framework
     │   └── nuxt.md, vue-spa.md, astro.md, laravel.md, strapi.md
     └── scripts/
         ├── detect-stack.sh       # deterministic stack detection → JSON
         ├── collect-evidence.sh   # one run, one evidence block per checklist item (orchestrator)
         ├── lib/common.sh         # helpers, project paths, stack JSON
-        └── checks/               # one file per checklist, sourced in order
-            ├── 10-security.sh, 20-deploy.sh, 30-web.sh, 40-web-geo.sh, 50-lighthouse.sh
+        ├── checks/               # one file per checklist, sourced in order
+        │   ├── 10-security.sh, 20-deploy.sh, 30-web.sh, 40-web-geo.sh, 45-html-validate.sh, 50-lighthouse.sh
+        └── html-validate.json    # html-validate rules for WEB-24 (standard + a11y presets)
 ```
 
 Principles:

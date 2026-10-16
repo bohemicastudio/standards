@@ -20,5 +20,5 @@
 Gotchas
 - No secret belongs in a SPA. Any `VITE_*` variable named like a secret is a finding (SEC-03).
 - Tokens in `localStorage` are readable by any XSS; prefer httpOnly cookies set by the API when feasible (SEC-10 applies to the API project).
-- With exposure `internal`, most of `web-standards.md` is out of scope; still check WEB-04, WEB-07, WEB-08 (fallback route), WEB-15.
+- With exposure `internal`, most of `web-standards.md` is out of scope; still check WEB-04, WEB-07, WEB-08 (fallback route), WEB-15, WEB-24.
 - Sourcemaps: `build.sourcemap: true` ships original source (SEC-17).

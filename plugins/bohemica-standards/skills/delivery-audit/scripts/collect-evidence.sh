@@ -12,7 +12,7 @@
 # Layout: lib/common.sh   helpers, project paths, stack JSON
 #         checks/NN-*.sh  one file per checklist, sourced in filename order; each is a list of `block` calls
 #         Add a checklist → add checks/NN-name.sh. Add an item → add a `block <ID>` to the matching file.
-# Deps:   bash, grep, find, perl, git (optional), node (optional), curl (only with --url).
+# Deps:   bash, grep, find, perl, git (optional), node + npx (optional: html-validate, lighthouse), curl (only with --url).
 #         Never modifies the target. Never prints secret values.
 
 set -u
