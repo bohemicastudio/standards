@@ -7,6 +7,7 @@
 | Routes | `routes/web.php`, `routes/api.php`, `routes/console.php`; middleware groups in `bootstrap/app.php` (11+) or `app/Http/Kernel.php` (10) |
 | Controllers | `app/Http/Controllers/**` |
 | Validation | `app/Http/Requests/*` (FormRequest) or `$request->validate()` |
+| Forms | Blade forms in `resources/views/**` (`@error`, `old()`, `@csrf`), Livewire components (`#[Validate]`), Inertia `useForm`; Precognition for live validation; length via `max:N` matching the migration column |
 | Auth / authorization | `auth` / `auth:sanctum` middleware on routes, `app/Policies/**`, `Gate`, `$this->authorize()` |
 | Views / head | `resources/views/**.blade.php` (`layouts/app.blade.php` for `<head>`), `{!! !!}` = unescaped output |
 | Frontend assets | Vite via `vite.config.js`, `resources/js`, `resources/css`; built into `public/build/` |

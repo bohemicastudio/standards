@@ -128,3 +128,13 @@ done
 note "heavy dependencies:"
 [ -f package.json ] && grep -nE '"(moment|lodash|jquery|chart\.js|three|gsap|swiper|@fortawesome/fontawesome-free|bootstrap|core-js|axios|firebase|@mui/material|antd)"' package.json || echo "(none of the usual suspects)"
 echo "(Lighthouse: see block WEB-23)"
+
+block WEB-25
+note "templates with forms or fields (forms first):"
+# shellcheck disable=SC2046
+form_scan forms $(template_files)
+note "validation / form libraries (package.json):"
+[ -f package.json ] && grep -nE '"(vee-validate|@vee-validate/[^"]+|@vuelidate/[^"]+|vuelidate|zod|valibot|yup|joi|@formkit/[^"]+|@tanstack/[a-z]+-form|react-hook-form|formik|laravel-precognition[^"]*|@nuxt/ui|@nuxt/ui-pro|vuetify|element-plus|quasar|primevue|naive-ui)"' package.json || echo "(none)"
+note "client handling of server validation errors (422 / field errors):"
+# shellcheck disable=SC2086
+g '(status|statusCode|code)\s*[!=]==?\s*422|case\s+422|setErrors\(|setFieldError|data\??\.errors|_data\??\.errors|\$errors->|@error\(|old\(' $APP_DIRS

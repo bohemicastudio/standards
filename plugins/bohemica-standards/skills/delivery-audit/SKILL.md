@@ -1,6 +1,6 @@
 ---
 name: delivery-audit
-description: Audit a delivered web project (Nuxt, Vue/Vite SPA, Astro, Laravel, Strapi) for handover / go-live readiness against Bohemica delivery standards — security, deploy & HTTP headers, web standards (robots, sitemap, meta, OG, GDPR, a11y basics) — and write a structured AUDIT.md. Use when asked to audit a project, check delivery readiness, review before handover or go-live, or "run the standards check". Supports --quick for a blockers-only pass.
+description: Audit a delivered web project (Nuxt, Vue/Vite SPA, Astro, Laravel, Strapi) for handover / go-live readiness against Bohemica delivery standards — security, deploy & HTTP headers, web standards (robots, sitemap, meta, OG, GDPR, a11y basics, forms) — and write a structured AUDIT.md. Use when asked to audit a project, check delivery readiness, review before handover or go-live, or "run the standards check". Supports --quick for a blockers-only pass.
 argument-hint: "[path] [--public|--internal|--api] [--url https://live-site.example] [--quick]  (no arguments → interactive setup)"
 ---
 

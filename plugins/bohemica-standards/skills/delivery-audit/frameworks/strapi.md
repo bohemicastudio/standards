@@ -4,7 +4,7 @@
 |---|---|
 | App config | `config/server.ts`, `config/admin.ts`, `config/middlewares.ts`, `config/database.ts`, `config/plugins.ts`, `config/api.ts` |
 | Env / secrets | `env()` helper in `config/*`; `APP_KEYS`, `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `TRANSFER_TOKEN_SALT`, `JWT_SECRET`, DB creds; `.env.example` |
-| Content types | `src/api/<name>/content-types/<name>/schema.json` |
+| Content types | `src/api/<name>/content-types/<name>/schema.json`; attribute `maxLength`, `required`, `regex` are enforced on core routes, not in custom controllers |
 | Routes | `src/api/<name>/routes/*.ts` (core routers + custom); `config.policies`, `config.middlewares` per route |
 | Controllers / services | `src/api/<name>/controllers`, `src/api/<name>/services` |
 | Validation | `ctx.request.body` in custom controllers; core routes validate against the schema |

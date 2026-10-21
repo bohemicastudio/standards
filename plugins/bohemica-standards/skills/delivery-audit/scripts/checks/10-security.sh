@@ -139,3 +139,28 @@ note "admin/preview/debug routes:"
 find . $FIND_EXCL -type f \( -ipath '*admin*' -o -ipath '*preview*' -o -ipath '*debug*' \) 2>/dev/null | head -n 20
 # shellcheck disable=SC2086
 g '/admin|/preview|/_debug|/telescope|/horizon|/nova' routes $SERVER_DIRS 2>/dev/null
+
+block SEC-19
+note "client side — form fields in templates:"
+# shellcheck disable=SC2046
+form_scan fields $(template_files)
+SCHEMA_DIRS="$(existing $SERVER_DIRS schemas shared utils app/utils src/schemas src/utils src/validation app/Rules)"
+note "length rules in server and shared schema dirs (zod/valibot .max, Laravel max:/between:/size:, maxLength):"
+# shellcheck disable=SC2086
+g '([^h]|^)\.max\(|maxLength|max_length|max:[0-9]+|between:[0-9]+|size:[0-9]+|Rule::.*max' $SCHEMA_DIRS
+note "string rules without a max on the same line (heuristic):"
+# shellcheck disable=SC2086
+[ -n "$SCHEMA_DIRS" ] && grep -rnIE $EXCL --exclude='*.json' -e 'z\.string\(\)|v\.string\(\)|[|'"'"'"]string[|'"'"'"]' $SCHEMA_DIRS 2>/dev/null | grep -viE 'max|between:|size:' | head -n 20
+echo "(end)"
+if [ -d src/api ]; then
+  note "Strapi content types (text-like attributes / maxLength set):"
+  for f in src/api/*/content-types/*/schema.json src/components/*/*.json; do
+    [ -f "$f" ] && printf '%s: text-like=%s maxLength=%s\n' "$f" "$(grep -cE '"type" *: *"(string|text|richtext|email|blocks)"' "$f")" "$(grep -c '"maxLength"' "$f")"
+  done | head -n 20
+fi
+note "DB string columns with an explicit length, and text columns (migrations, Prisma, Drizzle):"
+# shellcheck disable=SC2046
+g '->string\([^)]*,[[:space:]]*[0-9]+|->(text|mediumText|longText)\(|@db\.VarChar\(|varchar\(' $(existing database/migrations prisma drizzle src/db server/db)
+note "request body size limits (app, Strapi body, proxy, PHP):"
+# shellcheck disable=SC2086
+g 'requestSizeLimiter|maxRequestSizeInBytes|maxUploadFileRequestInBytes|client_max_body_size|bodyLimit|formLimit|jsonLimit|textLimit|post_max_size|maxBodyLength' $CONFIG_FILES $SERVER_DIRS $NGINX_FILES $(existing .htaccess public/.htaccess .user.ini php.ini)

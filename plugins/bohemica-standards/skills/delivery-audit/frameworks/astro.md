@@ -8,6 +8,7 @@
 | Head / meta | `<head>` in `src/layouts/*.astro`; `astro-seo` or a `Seo.astro` component |
 | Layout shell | `src/layouts/**` |
 | Server handlers | `src/pages/api/**` (endpoints exporting `GET`/`POST`), only meaningful with `output: 'server'` or `'hybrid'` |
+| Forms | `<form>` in `src/pages/**` / `src/components/**`; server-side validation in `src/pages/api/**` or Astro Actions (`src/actions/index.ts`, `defineAction` with an `input` zod schema) |
 | Middleware | `src/middleware.ts` (`defineMiddleware`) |
 | Error page | `src/pages/404.astro`, `src/pages/500.astro`; `return new Response(null, { status: 404 })` in dynamic pages |
 | Static files | `public/` |

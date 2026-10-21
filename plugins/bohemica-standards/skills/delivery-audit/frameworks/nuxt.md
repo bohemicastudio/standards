@@ -8,6 +8,7 @@
 | Head / meta | `app.head` in config, `useHead` / `useSeoMeta` in `app.vue`, layouts, pages |
 | Layout shell | `app.vue`, `layouts/*.vue` |
 | Server handlers | `server/api/**`, `server/routes/**` (h3: `readBody`, `getQuery`, `readValidatedBody`) |
+| Forms | components with `<form>` / `<UForm>` (Nuxt UI, `:schema` + `UFormField`), FormKit, vee-validate `useForm`; share the zod/valibot schema with `server/api/**` via `shared/` (Nuxt 4) or `utils/` |
 | Server middleware | `server/middleware/*.ts` (runs on every request) |
 | Route middleware (client+SSR) | `middleware/*.ts`, `*.global.ts` for all pages |
 | Error page | `error.vue`; throw `createError({ statusCode })` for 404 |
