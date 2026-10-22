@@ -2,7 +2,7 @@
 
 Claude Code plugin marketplace for Bohemica Studio. Contains the `bohemica-standards` plugin, which audits a delivered web project against our delivery standards and writes an `AUDIT.md` into the project.
 
-Current scope (v0.3): security, deploy & HTTP headers, web standards including AI/GEO readiness, HTML validity (html-validate), Lighthouse scores, and form input length limits and validation. Checklists are framework-neutral; framework locators exist for Nuxt, Vue/Vite SPA, Astro, Laravel and Strapi. Nuxt SSR is the most exercised path.
+Current scope (v0.4): security, deploy & HTTP headers, web standards including AI/GEO readiness, HTML validity (html-validate), Lighthouse scores, form input length limits and validation, and automated dependency updates. Checklists are framework-neutral; framework locators exist for Nuxt, Vue/Vite SPA, Astro, Laravel and Strapi. Nuxt SSR is the most exercised path.
 
 ## Install
 
@@ -69,7 +69,7 @@ plugins/bohemica-standards/
     ├── detect.md                 # stack signals, exposure inference, active tags, which files to load
     ├── checklists/               # by concern, framework-neutral
     │   ├── security.md           # SEC-01 … SEC-19
-    │   ├── deploy-and-headers.md # DEP-01 … DEP-16
+    │   ├── deploy-and-headers.md # DEP-01 … DEP-17
     │   └── web-standards.md      # WEB-01 … WEB-25
     ├── frameworks/               # where each concept lives per framework
     │   └── nuxt.md, vue-spa.md, astro.md, laravel.md, strapi.md

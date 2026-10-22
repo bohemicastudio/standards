@@ -121,3 +121,10 @@ Tags as in `security.md`; plus `docker` (Dockerfile/compose present) and `node` 
 - **How:** Block `DEP-16`: absolute URL hits after filtering well-known hosts. Ignore hits that are clearly external links in content.
 - **Severity:** warning
 - **Fix:** Move to config and document in `.env.example`.
+
+### DEP-17 Automated dependency updates configured
+- **Applies to:** all
+- **Check:** The repository keeps watching its dependencies after handover: Dependabot (`.github/dependabot.yml`) or Renovate (`renovate.json`, also on GitLab/Bitbucket) covers every ecosystem in the repo (npm, composer, docker, github-actions) and every directory with a manifest (monorepo apps included); security updates are on (GitHub: Dependabot alerts and security updates in the repo settings; Renovate: `vulnerabilityAlerts`). A CI audit step (`npm audit`, `composer audit`, `osv-scanner`, GitLab Dependency Scanning) complements it but does not replace update PRs. SEC-04 is the snapshot on audit day; this item is what catches advisories published after it.
+- **How:** Block `DEP-17`: Dependabot entries (`package-ecosystem`, `directory`, `interval`), Renovate config, CI audit/scanning steps, the ecosystems and manifest directories present in the repo, and the GitHub alert/security-update settings when `gh` can read them. An ecosystem or manifest directory with no matching entry is the finding. Settings shown as `unknown` (no `gh`, not GitHub, no admin rights) go to `not-verified` for that part only.
+- **Severity:** warning (info when the README documents that the client runs updates themselves); `n/a` when the repo has no dependency manifests
+- **Fix:** Add `.github/dependabot.yml` with one entry per ecosystem and directory (weekly, minor and patch grouped) and enable Dependabot alerts and security updates in the repo settings; on GitLab/Bitbucket use Renovate with `vulnerabilityAlerts` enabled, or the GitLab Dependency Scanning template.

@@ -1,6 +1,6 @@
 {
   "name": "bohemica-standards",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Audit a delivered web project against Bohemica delivery standards (security, deploy & headers, web standards) and write AUDIT.md.",
   "author": {
     "name": "Bohemica Studio"

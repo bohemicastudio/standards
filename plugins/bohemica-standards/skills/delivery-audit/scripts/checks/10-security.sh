@@ -148,10 +148,20 @@ SCHEMA_DIRS="$(existing $SERVER_DIRS schemas shared utils app/utils src/schemas 
 note "length rules in server and shared schema dirs (zod/valibot .max, Laravel max:/between:/size:, maxLength):"
 # shellcheck disable=SC2086
 g '([^h]|^)\.max\(|maxLength|max_length|max:[0-9]+|between:[0-9]+|size:[0-9]+|Rule::.*max' $SCHEMA_DIRS
-note "string rules without a max on the same line (heuristic):"
+note "string rules missing a max or a trim on the same line (heuristic; trim only judged for zod/valibot):"
 # shellcheck disable=SC2086
-[ -n "$SCHEMA_DIRS" ] && grep -rnIE $EXCL --exclude='*.json' -e 'z\.string\(\)|v\.string\(\)|[|'"'"'"]string[|'"'"'"]' $SCHEMA_DIRS 2>/dev/null | grep -viE 'max|between:|size:' | head -n 20
+[ -n "$SCHEMA_DIRS" ] && grep -rnIE $EXCL --exclude='*.json' -e 'z\.string\(\)|v\.string\(\)|[|'"'"'"]string[|'"'"'"]' $SCHEMA_DIRS 2>/dev/null \
+  | perl -ne 'chomp; my @m; push @m, "max" unless /max|between:|size:/i; push @m, "trim" if /[zv]\.string\(\)/ && !/trim/; print "$_  [no @{[join q(, no ), @m]}]\n" if @m' | head -n 20
 echo "(end)"
+note "trimming in server and shared schema code (zod .trim(), valibot v.trim(), handlers):"
+# shellcheck disable=SC2086
+g '\.trim\(\)|v\.trim\(\)|Str::(trim|squish)\(|\btrim\(\$' $SCHEMA_DIRS
+if [ "$FRAMEWORK" = "laravel" ]; then
+  note "Laravel TrimStrings middleware (11+: on unless bootstrap/app.php removes it; 10: listed in Kernel.php):"
+  # shellcheck disable=SC2046
+  TS_HITS="$(grep -nHE 'TrimStrings|trimStrings|ConvertEmptyStringsToNull|convertEmptyStringsToNull' $(existing bootstrap/app.php app/Http/Kernel.php app/Http/Middleware/TrimStrings.php) /dev/null 2>/dev/null | head -n 10)"
+  printf '%s\n' "${TS_HITS:-(none — on by default in Laravel 11+)}"
+fi
 if [ -d src/api ]; then
   note "Strapi content types (text-like attributes / maxLength set):"
   for f in src/api/*/content-types/*/schema.json src/components/*/*.json; do

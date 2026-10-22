@@ -87,3 +87,33 @@ note "hardcoded absolute URLs in source (excluding well-known):"
 grep -rnIoE $EXCL -e 'https?://[a-z0-9.-]+\.(cz|sk|com|eu|io|net|org|app|dev)[/"'"'"' ]' $APP_DIRS $SERVER_DIRS $CONFIG_FILES 2>/dev/null \
   | grep -vE 'schema\.org|w3\.org|fonts\.g|googleapis|gstatic|example\.|localhost|github\.com|npmjs|nuxt\.com|vuejs\.org|astro\.build|laravel\.com|unpkg|jsdelivr|cdnjs' | head -n $LIMIT || true
 echo "(end)"
+
+block DEP-17
+note "Dependabot:"
+DB_FILE="$(lsx .github/dependabot.yml .github/dependabot.yaml | grep -v '^(none)$' | head -n 1)"
+if [ -n "$DB_FILE" ]; then grep -nE 'package-ecosystem|directory|interval|open-pull-requests-limit|groups:' "$DB_FILE" | head -n $LIMIT; else echo "(no .github/dependabot.yml)"; fi
+note "Renovate:"
+RN_FILE="$(lsx renovate.json renovate.json5 .renovaterc .renovaterc.json .github/renovate.json .github/renovate.json5 .gitlab/renovate.json | grep -v '^(none)$' | head -n 1)"
+if [ -n "$RN_FILE" ]; then show "$RN_FILE" 20
+elif [ -f package.json ] && grep -q '"renovate"\s*:' package.json; then echo "package.json has a \"renovate\" key"
+else echo "(no Renovate config)"; fi
+note "CI audit / dependency scanning steps:"
+# shellcheck disable=SC2086
+g 'npm audit|pnpm audit|yarn (npm )?audit|composer audit|osv-scanner|snyk|trivy|dependency-review-action|Dependency-Scanning|dependency_scanning' $CI_FILES
+note "ecosystems and manifest directories in the repo:"
+{
+  find . -maxdepth 4 \( -name node_modules -o -name vendor -o -name .git \) -prune -o -type f \( -name package.json -o -name composer.json -o -name 'Dockerfile*' -o -name 'docker-compose*.y*ml' -o -name 'compose.y*ml' \) -print 2>/dev/null \
+    | sed -E 's#^\./##; s#(^|/)package\.json$#\1 npm#; s#(^|/)composer\.json$#\1 composer#; s#(^|/)(Dockerfile[^/]*|docker-compose[^/]*|compose\.ya?ml)$#\1 docker#' \
+    | awk '{ d = $1; e = $2; if (e == "") { e = d; d = "/" } else { sub(/\/$/, "", d); d = "/" d } print e "\t" d }'
+  [ -d .github/workflows ] && printf 'github-actions\t/\n'
+} | sort -u | head -n $LIMIT
+note "GitHub alert / security-update settings:"
+GH_REPO="$(git remote get-url origin 2>/dev/null | sed -nE 's#^(https://|git@)github\.com[:/]([^/]+/[^/.]+)(\.git)?$#\2#p')"
+if [ -z "$GH_REPO" ]; then echo "unknown (origin is not a GitHub repository)"
+elif ! command -v gh >/dev/null 2>&1 || ! gh auth status >/dev/null 2>&1; then echo "unknown ($GH_REPO; gh not installed or not logged in)"
+elif [ "$QUICK" = 1 ]; then echo "unknown ($GH_REPO; skipped in --quick)"
+else
+  gh_flag() { gh api "repos/$GH_REPO/$1" >/dev/null 2>&1 && echo enabled || echo "disabled or no admin access"; }
+  echo "$GH_REPO vulnerability alerts: $(gh_flag vulnerability-alerts)"
+  echo "$GH_REPO automated security fixes: $(gh api "repos/$GH_REPO/automated-security-fixes" --jq '.enabled' 2>/dev/null || echo "unknown (no admin access)")"
+fi
