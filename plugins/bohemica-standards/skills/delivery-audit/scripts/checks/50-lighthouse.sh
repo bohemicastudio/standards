@@ -2,8 +2,9 @@
 # checks/50-lighthouse.sh — Lighthouse (mobile) run for WEB-23. Live only, skipped in --quick.
 # Sourced by collect-evidence.sh; helpers and paths come from lib/common.sh.
 #
-# Resolution order for the CLI: `lighthouse` on PATH → project-local via `npx --no-install`
-# → one-off download via `npx -y lighthouse@12` (needs network, ~40 MB the first time).
+# Resolution order for the CLI: `lighthouse` on PATH → project-local node_modules/.bin
+# → one-off download via `npx -y lighthouse@12.8.2` (needs network, ~40 MB the first time).
+# The npx version is pinned exactly (a plugin-directory requirement): bump it here and in the plugin README.
 # Chrome/Chromium must be installed; CHROME_PATH is honoured, common Windows/macOS paths are probed.
 # Full JSON report is written to $TMPDIR (never into the audited project); its path is printed.
 
@@ -16,10 +17,10 @@ else
   LH_CMD=""
   if command -v lighthouse >/dev/null 2>&1; then
     LH_CMD="lighthouse"
-  elif npx --no-install lighthouse --version >/dev/null 2>&1; then
-    LH_CMD="npx --no-install lighthouse"
+  elif [ -x node_modules/.bin/lighthouse ]; then
+    LH_CMD="$PWD/node_modules/.bin/lighthouse"
   elif command -v npx >/dev/null 2>&1; then
-    LH_CMD="npx -y lighthouse@12"
+    LH_CMD="npx -y lighthouse@12.8.2"
     note "lighthouse not installed — using one-off download via npx (slower the first time)"
   fi
 

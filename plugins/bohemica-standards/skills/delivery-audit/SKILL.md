@@ -10,6 +10,8 @@ You audit one delivered project and produce `AUDIT.md` in its root. You are stri
 
 Arguments received: `$ARGUMENTS`
 
+**Where this works.** The audit needs a shell with bash and the project folder on disk: Claude Code, or a Cowork session that runs on the user's computer and has the folder. If you cannot run shell commands, or there is no project folder to point the script at (a chat on claude.ai), say so in two lines, name Claude Code as the place to run it, and stop. Do not audit from memory, from pasted snippets or from the live site alone. If `${CLAUDE_SKILL_DIR}` shows up below unreplaced, the scripts are in `scripts/` next to this file.
+
 ## 0. Interactive setup (only when invoked with no arguments)
 
 If `$ARGUMENTS` is empty, collect the run configuration in **one** `AskUserQuestion` call with these four questions, then continue as if the answers had been passed as flags. Do not run anything before the dialog.

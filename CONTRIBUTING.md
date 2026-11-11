@@ -74,6 +74,12 @@ Then run the skill itself on at least one real project with `claude --plugin-dir
 
 Scripts must run under Git Bash on Windows as well as Linux and macOS: no `jq`, no GNU-only flags without a fallback, `perl` allowed, `node` optional.
 
+The plugin is listed in the Claude plugin directory, which adds three rules ([pre-submission checklist](https://claude.com/docs/plugins/pre-submission-checklist.md)):
+
+- Every `npx` download pins an exact version (`npx -y html-validate@10.17.0`, never `@10` or `@latest`). A project-local tool is called as `node_modules/.bin/<tool>`, not through `npx`.
+- Anything a script runs, sends or fetches is described in `plugins/bohemica-standards/README.md`. A new `curl` target, CLI or download means a new line there in the same PR.
+- No symlinks, binaries other than images, or files over 256 KiB in the plugin folder, and no `.gitattributes` rule that rewrites file contents (`filter`, `export-ignore`, `export-subst`).
+
 ## Pull requests
 
 - One concern per PR: one item, one fix, one framework. Small PRs get merged; bundles get parked.

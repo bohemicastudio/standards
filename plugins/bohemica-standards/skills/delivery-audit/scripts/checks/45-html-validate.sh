@@ -6,7 +6,8 @@
 # → build output with a root index.html (.output/public, dist, build) → static HTML in the repo (index.html, public/).
 # Templates (.vue/.astro/Blade) are never validated directly.
 # Resolution order for the CLI: `html-validate` on PATH → project-local node_modules/.bin
-# → one-off download via `npx -y html-validate@10` (Node ≥ 20) or `@9` (older Node).
+# → one-off download via `npx -y html-validate@10.17.0` (Node ≥ 20) or `@9.7.1` (older Node).
+# The npx versions are pinned exactly (a plugin-directory requirement): bump them here and in the plugin README.
 # Config is scripts/html-validate.json (standard + a11y presets); project configs are ignored.
 # Pages, a copy of the config and the JSON report go to $TMPDIR, never into the audited project.
 # html-validate runs from that temp dir because it mis-resolves an absolute --config path on Windows.
@@ -81,7 +82,7 @@ else
   elif [ -x node_modules/.bin/html-validate ]; then
     HV_CMD="$PWD/node_modules/.bin/html-validate"
   elif command -v npx >/dev/null 2>&1; then
-    if [ "$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)" -ge 20 ]; then HV_CMD="npx -y html-validate@10"; else HV_CMD="npx -y html-validate@9"; fi
+    if [ "$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)" -ge 20 ]; then HV_CMD="npx -y html-validate@10.17.0"; else HV_CMD="npx -y html-validate@9.7.1"; fi
   fi
   if [ -z "$HV_CMD" ]; then
     echo "(html-validate unavailable: no html-validate binary and no npx)"

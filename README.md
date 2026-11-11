@@ -31,6 +31,8 @@ Source: https://github.com/bohemicastudio/standards. For a private repo, Claude 
 
 Output: `AUDIT.md` in the audited project with a summary table, findings grouped by severity (each with location, evidence, fix), passed IDs, n/a, not-verified items with their reason, and skipped items in quick mode.
 
+The plugin's own README, [plugins/bohemica-standards/README.md](plugins/bohemica-standards/README.md), is what the plugin directory shows as the listing. It lists every command the scripts run and every request they send; keep it in step with the scripts.
+
 ## Local development
 
 Run Claude Code with the plugin loaded straight from this checkout (the path points at the plugin folder, not the repo root):
@@ -57,7 +59,7 @@ bash plugins/bohemica-standards/skills/delivery-audit/scripts/collect-evidence.s
 
 `--only` runs selected check groups by their filename prefix (see `scripts/checks/`), useful when tuning one group.
 
-Requirements: bash, grep, find, perl (Git Bash on Windows has all of them), `git`, `node` and `curl`. Lighthouse needs Chrome or Edge installed; the Lighthouse and html-validate CLIs are downloaded through `npx` on first use if not installed (html-validate 10 needs Node 20+, older Node falls back to 9).
+Requirements: bash, grep, find, perl (Git Bash on Windows has all of them), `git`, `node` and `curl`. Lighthouse needs Chrome or Edge installed; the Lighthouse and html-validate CLIs are downloaded through `npx` on first use if not installed, at exact pinned versions (html-validate 10 needs Node 20+, older Node falls back to 9).
 
 ## How it works
 
