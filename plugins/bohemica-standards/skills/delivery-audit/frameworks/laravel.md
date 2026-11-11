@@ -28,5 +28,5 @@ Gotchas
 - `APP_DEBUG=true` in production shows full stack traces and env values (SEC-13, blocker).
 - Debug tools (`telescope`, `horizon`, `debugbar`, `nova`) must be gated or disabled in production (SEC-18).
 - Mass assignment: models with `$guarded = []` plus `Model::create($request->all())` (SEC-06).
-- The web server must point at `public/`, never at the project root (DEP-07).
+- The web server must point at `public/`, never at the project root (DEP-07); with the project root as docroot, `/.env` is one request away (DEP-18).
 - The `php artisan optimize` family must run at deploy, and the queue worker must restart after deploy (`queue:restart`).

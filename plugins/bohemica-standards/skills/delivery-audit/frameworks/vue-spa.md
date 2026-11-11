@@ -14,7 +14,7 @@
 | Static files | `public/` |
 | Build output | `dist/` (`dist/assets/*` hashed) |
 | Headers / caching | reverse proxy or hosting config only (nginx, `_headers`, `vercel.json`); `dist/index.html` must be `no-cache`, `dist/assets/**` immutable |
-| History fallback | nginx `try_files $uri $uri/ /index.html;` or equivalent |
+| History fallback | nginx `try_files $uri $uri/ /index.html;` or equivalent; it answers `/.env` with `index.html` and status 200, which is not a leak (DEP-18) |
 | Images / fonts | plain `<img>`; `vite-imagetools` or CDN; fonts in `public/fonts` or `@fontsource/*` |
 | Third-party scripts | `index.html` or `src/main.ts` |
 

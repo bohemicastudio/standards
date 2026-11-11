@@ -117,3 +117,41 @@ else
   echo "$GH_REPO vulnerability alerts: $(gh_flag vulnerability-alerts)"
   echo "$GH_REPO automated security fixes: $(gh api "repos/$GH_REPO/automated-security-fixes" --jq '.enabled' 2>/dev/null || echo "unknown (no admin access)")"
 fi
+
+block DEP-18
+note "nginx server blocks in the repo (file order):"
+# shellcheck disable=SC2086
+nginx_servers $NGINX_FILES
+if [ -n "$NGINX_FILES" ]; then
+  note "dotfile location rules in any proxy file (included snippets too, comments skipped):"
+  # shellcheck disable=SC2086
+  grep -nHE 'location[^{#]*[/)][\]\.' $NGINX_FILES 2>/dev/null | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' | head -n 20
+  echo "(end)"
+fi
+CADDY_FILES="$(for f in $NGINX_FILES; do case "$f" in *Caddyfile) printf '%s ' "$f" ;; esac; done)"
+# shellcheck disable=SC2086
+[ -n "$CADDY_FILES" ] && { note "Caddyfile site addresses, root, file_server, hide:"; grep -nHE '^[^[:space:]#(][^{]*\{|^[[:space:]]*(root|file_server|hide)([[:space:]]|$)' $CADDY_FILES | head -n 20; }
+DOCKER_FILES="$(existing Dockerfile docker/Dockerfile .docker/Dockerfile docker-compose.yml docker-compose.yaml compose.yml compose.yaml)"
+if [ -n "$DOCKER_FILES" ]; then
+  note "what is copied or mounted into the image (compare with the root paths above):"
+  # shellcheck disable=SC2086
+  grep -nHE '^[[:space:]]*(COPY|ADD|WORKDIR)[[:space:]]|^[[:space:]]*-[[:space:]]*["'"'"']?\.{1,2}(/[^:]*)?:/' $DOCKER_FILES 2>/dev/null | head -n 20
+  echo "(end)"
+fi
+if [ -n "$URL" ]; then
+  note "live: dotfiles and project files on $URL (status, type, what the body looks like — never the body):"
+  for p in /.env /.git/config /composer.json /package.json; do curl_probe "$URL$p"; done
+  note "live: unmatched Host — the server IP instead of the hostname, answered by the default server block:"
+  EDGE="$(curl -sI -k --connect-timeout 5 --max-time 10 -A "bohemica-standards-audit" -w 'remote-ip: %{remote_ip}\n' "$URL" 2>/dev/null | tr -d '\r')"
+  ORIGIN_IP="$(printf '%s\n' "$EDGE" | sed -n 's/^remote-ip: //p' | tail -n 1)"
+  echo "  IP: ${ORIGIN_IP:-unknown}; edge headers: $(printf '%s\n' "$EDGE" | grep -iE '^(server|via|cf-ray|x-vercel-id|x-nf-request-id|x-amz-cf-id|x-served-by):' | cut -c1-60 | tr '\n' ' ')"
+  if [ -n "$ORIGIN_IP" ]; then
+    case "$ORIGIN_IP" in *:*) ORIGIN_IP="[$ORIGIN_IP]" ;; esac
+    HOSTPORT="${URL#*://}"; HOSTPORT="${HOSTPORT%%/*}"
+    case "$HOSTPORT" in
+      *:[0-9]*) ORIGINS="${URL%%://*}://$ORIGIN_IP:${HOSTPORT##*:}" ;;   # explicit port: same scheme and port only
+      *)        ORIGINS="http://$ORIGIN_IP https://$ORIGIN_IP" ;;
+    esac
+    for o in $ORIGINS; do curl_probe "$o/"; curl_probe "$o/.env"; done
+  fi
+fi

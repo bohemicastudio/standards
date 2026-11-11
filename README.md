@@ -2,7 +2,7 @@
 
 Claude Code plugin marketplace for Bohemica Studio. Contains the `bohemica-standards` plugin, which audits a delivered web project against our delivery standards and writes an `AUDIT.md` into the project.
 
-Current scope (v0.4): security, deploy & HTTP headers, web standards including AI/GEO readiness, HTML validity (html-validate), Lighthouse scores, form input length limits and validation, and automated dependency updates. Checklists are framework-neutral; framework locators exist for Nuxt, Vue/Vite SPA, Astro, Laravel and Strapi. Nuxt SSR is the most exercised path.
+Current scope (v0.5): security, deploy & HTTP headers, web standards including AI/GEO readiness, HTML validity (html-validate), Lighthouse scores, form input length limits and validation, automated dependency updates, and the web server's default server block and dotfile exposure (`.env`, `.git`). Checklists are framework-neutral; framework locators exist for Nuxt, Vue/Vite SPA, Astro, Laravel and Strapi. Nuxt SSR is the most exercised path.
 
 ## Install
 
@@ -26,7 +26,7 @@ Source: https://github.com/bohemicastudio/standards. For a private repo, Claude 
 - No arguments at all: the skill opens a short interactive dialog (target, exposure, live URL, full or quick) and then runs.
 - `path` — project folder (default: current directory; in a monorepo point at the app).
 - `--public` / `--internal` / `--api` — who will see it. If omitted and not obvious, the skill asks one question.
-- `--url` — live site; enables header, robots, sitemap, 404 and AI-crawler checks with `curl`, plus a Lighthouse run (needs Chrome; the CLI is downloaded via `npx` if not installed). HTML validation (WEB-24) then runs on the live home page and up to four sitemap URLs; without a URL it validates the build output (`.output/public`, `dist`, `build`) or static HTML in the repo.
+- `--url` — live site; enables header, robots, sitemap, 404, AI-crawler and dotfile/default-server checks with `curl` (DEP-18 requests `/.env`, `/.git/config` and the server's bare IP; only status, type and a classification are printed, never the body), plus a Lighthouse run (needs Chrome; the CLI is downloaded via `npx` if not installed). HTML validation (WEB-24) then runs on the live home page and up to four sitemap URLs; without a URL it validates the build output (`.output/public`, `dist`, `build`) or static HTML in the repo.
 - `--quick` — blockers and script-decided items only, no file reading, no Lighthouse (html-validate still runs). A couple of minutes instead of ten.
 
 Output: `AUDIT.md` in the audited project with a summary table, findings grouped by severity (each with location, evidence, fix), passed IDs, n/a, not-verified items with their reason, and skipped items in quick mode.
@@ -69,7 +69,7 @@ plugins/bohemica-standards/
     ├── detect.md                 # stack signals, exposure inference, active tags, which files to load
     ├── checklists/               # by concern, framework-neutral
     │   ├── security.md           # SEC-01 … SEC-19
-    │   ├── deploy-and-headers.md # DEP-01 … DEP-17
+    │   ├── deploy-and-headers.md # DEP-01 … DEP-18
     │   └── web-standards.md      # WEB-01 … WEB-25
     ├── frameworks/               # where each concept lives per framework
     │   └── nuxt.md, vue-spa.md, astro.md, laravel.md, strapi.md

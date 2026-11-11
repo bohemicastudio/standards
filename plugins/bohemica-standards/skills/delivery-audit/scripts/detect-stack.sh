@@ -150,7 +150,7 @@ fi
 DEPLOY=""
 DOCKERFILE="$(first_match Dockerfile dockerfile docker/Dockerfile .docker/Dockerfile)"
 [ -n "$DOCKERFILE" ] || [ -n "$(first_match docker-compose.yml docker-compose.yaml compose.yml compose.yaml)" ] && DEPLOY="$DEPLOY docker"
-NGINX_CONF="$(find . -maxdepth 3 \( -name 'nginx.conf' -o -name '*.nginx' -o -name 'nginx*.conf' \) -not -path '*/node_modules/*' 2>/dev/null | head -1)"
+NGINX_CONF="$(find . -maxdepth 4 \( -name node_modules -o -name vendor -o -name .git \) -prune -o -type f \( -name 'nginx.conf' -o -name '*.nginx' -o -name 'nginx*.conf' -o -name 'default.conf' -o -name '*.conf.template' -o -path '*/nginx/*.conf' -o -path '*/sites-available/*' -o -path '*/sites-enabled/*' \) -print 2>/dev/null | sort | head -1)"
 [ -n "$NGINX_CONF" ] && DEPLOY="$DEPLOY nginx"
 [ -d .github/workflows ] && DEPLOY="$DEPLOY github-actions"
 has_file .gitlab-ci.yml && DEPLOY="$DEPLOY gitlab-ci"
